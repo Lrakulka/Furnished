@@ -6,8 +6,9 @@ import re
 from datetime import date
 
 FURNISHED_URL = "https://www.furnished.lu/index.php?route=product/product&product_id=%d"
-MAX_RESIDENCE_NUMBER = 10000
-MAX_FAIL_READ = 100
+MAX_RESIDENCE_NUMBER = 5000
+MIN_RESIDENCE_NUMBER = 1
+MAX_FAIL_READ = 500
 MARKER_SHIFT = 0.00002
 MARKER_SPREAD = 5
 SLEEP_TIME = 0.001
@@ -67,10 +68,10 @@ def main():
     random.seed(MARKER_SPREAD)
     failAttemps = 0
     residences = []
-    for id in range(659, MAX_RESIDENCE_NUMBER):
+    for id in range(MIN_RESIDENCE_NUMBER, MAX_RESIDENCE_NUMBER):
         time.sleep(SLEEP_TIME)
         print(id)
-        if failAttemps > 40:
+        if failAttemps > MAX_FAIL_READ:
             break
         pageUrl = FURNISHED_URL % id
         try:
