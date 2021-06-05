@@ -9,6 +9,7 @@ FURNISHED_URL = "https://www.furnished.lu/index.php?route=product/product&produc
 MAX_RESIDENCE_NUMBER = 5000
 MIN_RESIDENCE_NUMBER = 1
 MAX_FAIL_READ = 500
+MAX_RETRY_READ = 5
 MARKER_SHIFT = 0.00002
 MARKER_SPREAD = 5
 SLEEP_TIME = 0.001
@@ -33,7 +34,7 @@ def parsePage(document, residenceId):
     checkIn = re.search("<option data-checkout=checkin-0.*value=\".*\">", document).group()
     checkIn = nomalize(checkIn)
     checkIn = "CheckIn : " + re.sub('<option data-checkout=checkin-0 value="|">', '', checkIn)
-    residenceSize = re.search("[0-9]+(,|[0-9])*m<sup>2</sup>", document).group()
+    residenceSize = re.search("[0-9]+(,|\\.|[0-9])*m<sup>2</sup>", document).group()
     residenceSize = "Size : " + re.sub('<sup>2</sup>', '', residenceSize) + "^2"
 
     #print(location)
@@ -74,17 +75,26 @@ def main():
         if failAttemps > MAX_FAIL_READ:
             break
         pageUrl = FURNISHED_URL % id
-        try:
-            page = urllib.request.urlopen(pageUrl)
-            if (page.getcode() == 200):
-                failAttemps = 0
-                residence = parsePage(page.read().decode("utf-8"), pageUrl)
-                residences.append(residence)
-            else:
-                failAttemps += 1
-        except Exception as e:
-            print(e)
-            failAttemps += 1
+        pageRetry = True
+        pageRetryCount = 0
+        while pageRetry:
+            try:
+                pageRetry = False
+                page = urllib.request.urlopen(pageUrl)
+                if (page.getcode() == 200):
+                    failAttemps = 0
+                    residence = parsePage(page.read().decode("utf-8"), pageUrl)
+                    residences.append(residence)
+                else:
+                    failAttemps += 1
+            except Exception as e:
+                if not e.__str__().__contains__("404") and pageRetryCount < MAX_RETRY_READ:
+                    time.sleep(SLEEP_TIME * 2)
+                    pageRetryCount += 1
+                    pageRetry = True
+                else:
+                    print(e)
+                    failAttemps += 1
 
     residences = residences.__str__() + ";"
     writeToFile(residences)
