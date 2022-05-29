@@ -50,7 +50,7 @@ def priceMeterSort(e):
 
 
 def main():
-    map = readFromFile("./2021-06-04")
+    map = readFromFile("./2022-05-29")
     residencesCheapest = map.copy()
     residencesCheapest.sort(reverse=False, key=priceSort)
     residencesExpensive = map.copy()
