@@ -6,7 +6,7 @@ import re
 from datetime import date
 
 FURNISHED_URL = "https://www.furnished.lu/index.php?route=product/product&product_id=%d"
-MAX_RESIDENCE_NUMBER = 5000
+MAX_RESIDENCE_NUMBER = 2000
 MIN_RESIDENCE_NUMBER = 1
 MAX_FAIL_READ = 500
 MAX_RETRY_READ = 5
@@ -34,7 +34,7 @@ def parsePage(document, residenceId):
     checkIn = re.search("<option data-checkout=checkin-0.*value=\".*\">", document).group()
     checkIn = nomalize(checkIn)
     checkIn = "CheckIn : " + re.sub('<option data-checkout=checkin-0 value="|">', '', checkIn)
-    residenceSize = re.search("[0-9]+(,|\\.|[0-9])*m<sup>2</sup>", document).group()
+    residenceSize = re.search("[0-9]+(,|\\.|[0-9])*[m,M]<sup>2</sup>", document).group()
     residenceSize = "Size : " + re.sub('<sup>2</sup>', '', residenceSize) + "^2"
 
     #print(location)

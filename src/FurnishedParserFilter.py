@@ -1,5 +1,4 @@
 from datetime import datetime
-from collections import OrderedDict
 
 DATE_FORMAT = "%Y-%m-%d"
 
@@ -17,7 +16,7 @@ def convertToMap(strMap):
         record["residenceId"] = info[0].split(" : ")[1]
         record["residenceName"] = info[1].split(" : ")[1]
         record["residencePrice"] = info[2].split(" : ")[1].split("&")[0].replace(",", "")
-        record["residenceSize"] = info[3].split(" : ")[1].split("m")[0].replace(",", ".")
+        record["residenceSize"] = info[3].lower().split(" : ")[1].split("m")[0].replace(",", ".")
         record["checkIn"] = info[4].split(" : ")[1].replace("'", "")
         map.append(record)
     return map
@@ -51,7 +50,7 @@ def priceMeterSort(e):
 
 
 def main():
-    map = readFromFile("./2022-07-30")
+    map = readFromFile("./2022-07-31")
     myCheckIn = datetime.strptime("2022-12-15", DATE_FORMAT)
     residencesCheapest = map.copy()
     residencesCheapest.sort(reverse=False, key=priceSort)
@@ -81,8 +80,9 @@ def main():
     print(createMapMarks(residencesPricePerMeter[:10]))
     print()
     print("-------------Prices Map Residences----------------")
-    pricesMap = OrderedDict(sorted(pricesMap.items()))
+    pricesMap = sorted(pricesMap.items())
     print(pricesMap)
+    print('  Total Number of Residences ' + str(len(map)))
     print()
 
 
