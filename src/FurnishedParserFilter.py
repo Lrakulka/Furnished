@@ -1,4 +1,5 @@
 from datetime import datetime
+from collections import OrderedDict
 
 DATE_FORMAT = "%Y-%m-%d"
 
@@ -50,19 +51,21 @@ def priceMeterSort(e):
 
 
 def main():
-    map = readFromFile("./2022-05-29")
+    map = readFromFile("./2022-07-30")
+    myCheckIn = datetime.strptime("2022-12-15", DATE_FORMAT)
     residencesCheapest = map.copy()
     residencesCheapest.sort(reverse=False, key=priceSort)
     residencesExpensive = map.copy()
     residencesExpensive.sort(reverse=True, key=priceSort)
-    myCheckIn = datetime.strptime("2021-09-01", DATE_FORMAT)
     residencesPricePerMeter = map.copy()
     residencesPricePerMeter.sort(reverse=False, key=priceMeterSort)
     residences = []
+    pricesMap = {}
     for record in map:
         residencePrice = float(record["residencePrice"])
         residenceSize = float(record["residenceSize"])
         residenceCheckIn = datetime.strptime(record["checkIn"], DATE_FORMAT)
+        pricesMap[residencePrice] = (pricesMap[residencePrice] if residencePrice in pricesMap else 0) + 1
         if residencePrice <= 700 and residenceSize > 12 and residenceCheckIn < myCheckIn:
             residences.append(record)
     print("-------------Residences Preference----------------")
@@ -76,6 +79,10 @@ def main():
     print()
     print("-------------Top 10 price/meters Residences----------------")
     print(createMapMarks(residencesPricePerMeter[:10]))
+    print()
+    print("-------------Prices Map Residences----------------")
+    pricesMap = OrderedDict(sorted(pricesMap.items()))
+    print(pricesMap)
     print()
 
 
