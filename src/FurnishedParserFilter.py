@@ -50,7 +50,7 @@ def priceMeterSort(e):
 
 
 def main():
-    map = readFromFile("./2022-07-31")
+    map = readFromFile("./2022-08-07")
     myCheckIn = datetime.strptime("2022-12-15", DATE_FORMAT)
     residencesCheapest = map.copy()
     residencesCheapest.sort(reverse=False, key=priceSort)
